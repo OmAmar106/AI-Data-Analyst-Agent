@@ -2,53 +2,49 @@ from flask import Flask,request,jsonify
 from flask_cors import CORS
 import os,json
 from response import response
-from gettable import gettable
+# from gettable import gettable
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__,template_folder='templates')
 CORS(app)
 
-SCRAPER_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "extract_url",
-        "description": "Extract the website link or URL that needs to be scraped from the input text",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "url": {
-                    "type": "string",
-                    "description": "The full URL that the problem statement, that is user asks for to be scraped (e.g. https://example.com/page)"
-                }
-            },
-            "required": ["url"],
-            "additionalProperties": False
-        },
-        "strict": True
-    }
-}
+# DATA_PREPARER = {
+#     "type": "function",
+#     "function": {
+#         "name": "extract_data",
+#         "description": (
+#             "Write complete code to load the dataset from the given URL or source, "
+#             "without modifying, renaming, or assuming any column names. "
+#             "Only include essential imports (like pandas) and the code to load the dataset. "
+#             "Ensure the code runs correctly and stores the data in a variable."
+#         ),
+#         "parameters": {
+#             "type": "object",
+#             "properties": {
+#                 "code": {
+#                     "type": "string",
+#                     "description": (
+#                         "The complete code to load the dataset. Must include necessary imports, "
+#                         "and store the loaded data in a variable (like df)."
+#                     )
+#                 },
+#                 "data_type": {
+#                     "type": "string",
+#                     "description": "The data type of the variable storing the dataset (e.g., pandas.DataFrame)"
+#                 }
+#             },
+#             "required": ["code", "data_type"],
+#             "additionalProperties": False
+#         },
+#         "strict": True
+#     }
+# }
 
-PROBLEM_LIST_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "extract_problem_list",
-        "description": "Extract the list of problems related to Data Analysis",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "problems": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                    "description": "Ordered list of Data Analysis problems mentioned except for scraping by the user"
-                }
-            },
-            "required": ["problems"],
-            "additionalProperties": False
-        },
-        "strict": True
-    }
-}
-
+Dataset = [
+    "1. Data Scraping and Extracting Single Table using Pandas", # gettable.py
+    "2. Data Scraping from some website some Other Way",
+    "3. Neither 1 nor 2" 
+]
 
 @app.route('/analyze',methods=['POST'])
 def analyze():
@@ -61,10 +57,20 @@ def analyze():
         }
     ]
 
-    d = response(SCRAPER_TOOL,messages)
-    url = json.loads(d["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"])["url"]
+    # else:
+    #     for i in range(10):
+    #         d = response(DATA_PREPARER,messages)
+    #         d = json.loads(d["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"])
+    #         code,type1 = d["code"],d["data_type"]
+    #         messages.append({"role":"agent","content":(d["code"],d["data_type"])})
 
-    df = gettable(url)
+    #         flag,output = isok(code,type1)
+    #         finaloutput = output
+    #         if flag:
+    #             break
+            
+
+    #         print(code,type1)
 
     L = [1,'titanic',0.485782,'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=']
     return jsonify(json.dumps(L))

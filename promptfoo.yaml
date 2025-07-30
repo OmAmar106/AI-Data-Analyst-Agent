@@ -2,7 +2,7 @@ description: "TDS Data Analyst Agent – generic eval (20-point rubric)"
 
 defaultTest:
   vars:
-    question: file://test_question.txt
+    question: file://test_cases/test_question.txt
 
 providers:
   - id: https
