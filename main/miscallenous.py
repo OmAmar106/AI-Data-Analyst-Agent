@@ -1,3 +1,7 @@
+# first -> get the dataset, preferably in csv format!from langchain.agents import initialize_agent, AgentType
+# second -> do the data analysis
+# third -> return in the necessary format
+
 from flask import Flask,request,jsonify
 from flask_cors import CORS
 import os,json
@@ -9,8 +13,6 @@ from langchain.memory import ConversationBufferMemory
 from datetime import datetime
 
 llm = AIPipeLLM()
-
-
 FORBIDDEN = ["shutil", "os", "subprocess", "open(", "rm", "rmtree", "remove", "unlink", "sys.exit", "exit("]
 
 def safe_python_executor(code: str):
@@ -57,10 +59,6 @@ def analyze():
            "Each answer must be as short as possible."
            "Do NOT write full sentences."
     )
-
-    # first categorize as data set is there or not
-
-    isscraping = False
     return jsonify(json.dumps(t))
 
 if __name__=='__main__':
