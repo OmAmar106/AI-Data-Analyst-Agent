@@ -13,12 +13,20 @@ key2 = os.getenv('AI_PIPE_API_KEY2')
 key3 = os.getenv('AI_PIPE_API_KEY3')
 key4 = os.getenv('AI_PIPE_API_KEY4')
 pkey = os.getenv('PERPLEXITY_API_KEY')
+gkey = os.getenv('GROK_API_KEY')
 
-keys = [pkey,key,key1,key2,key3,key4]
+keys = {
+    "PER":pkey,
+    "AI":key,
+    "AI1":key1,
+    "AI2":key2,
+    "AI3":key3,
+    "AI4":key4
+}
 
 class AIPipeLLM(LLM):
-    # api_url: str = "https://aipipe.org/openrouter/v1/chat/completions"
-    api_url: str = "https://api.perplexity.ai/chat/completions"
+    
+    # api_url: str = "https://api.perplexity.ai/chat/completions"
     api_key: Optional[str] = None
 
     @property
@@ -28,19 +36,23 @@ class AIPipeLLM(LLM):
     def _call(self, prompt: str, stop: Optional[List[str]] = None, **kwargs) -> str:
         for i in range(5):
             # randomnum = random.randint(0,4)
-            randomnum = 0
-            key = keys[randomnum]
+            ty = 'PER'
+            api_url = "https://aipipe.org/openrouter/v1/chat/completions" if ty!="PER" else "https://api.perplexity.ai/chat/completions"
             try:
                 headers = {
-                    "Authorization": f"Bearer {key}",
+                    "Authorization": f"Bearer {keys[ty]}",
                     "Content-Type": "application/json"
                 }
                 payload = {
-                    "model": "sonar-pro",
-                    "messages": [{"role": "user", "content": prompt}]
+                    # "model": "sonar-pro",
+                    "model": "openai/gpt-4.1" if ty!='PER' else 'sonar-pro',
+                    "messages": [{"role": "user", "content": prompt}],
+                    # "max_tokens": 1000
                 }
+                if ty=='PER':
+                    payload['max_tokens'] = 1000
 
-                response = requests.post(self.api_url, headers=headers, json=payload)
+                response = requests.post(api_url, headers=headers, json=payload)
                 return response.json()['choices'][0]['message']['content']
             except:
                 pass
@@ -57,8 +69,10 @@ class AIPipeLLM(LLM):
                     "Content-Type": "application/json"
                 }
                 payload = {
-                    "model": "openai/gpt-3.5-turbo",
-                    "messages": [{"role": "user", "content": prompt}]
+                    "model": "sonar-pro",
+                    # "model": "openai/gpt-4.1",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 500  
                 }
 
                 response = requests.post(self.api_url, headers=headers, json=payload)

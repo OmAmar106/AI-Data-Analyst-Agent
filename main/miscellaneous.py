@@ -47,19 +47,11 @@ agent = initialize_agent(
 )
 
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-app = Flask(__name__,template_folder='templates')
-CORS(app)
-
-@app.route('/analyze',methods=['POST'])
-def analyze():
-    file = request.get_data(as_text=True)
-    t = agent.run(
-            file + "\n\n\nRespond with only the final answers, no explanation, no units. "
-           "Each answer must be as short as possible."
-           "Do NOT write full sentences."
-    )
-    return jsonify(json.dumps(t))
-
 if __name__=='__main__':
-    app.run(debug=True)
+    t = agent.run(
+            open('test_cases/test_question.txt','r').read() + "\n\n\nRespond with only the final answers, no explanation, no units. "
+           "Each answer must be as short as possible and must be accurate, so make sure you do data cleaning properly."
+           "Do NOT write full sentences. Also importantly, the output must be in the format specified in the given problem."
+    )
+    print()
+    print(t)
