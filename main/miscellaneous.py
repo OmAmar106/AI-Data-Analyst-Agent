@@ -1,17 +1,18 @@
-# first -> get the dataset, preferably in csv format!from langchain.agents import initialize_agent, AgentType
-# second -> do the data analysis
-# third -> return in the necessary format
-
 from flask import Flask,request,jsonify
 from flask_cors import CORS
 import os,json
-from llm import AIPipeLLM
 from langchain.agents import initialize_agent, AgentType
 from langchain_experimental.tools.python.tool import PythonREPLTool
 from langchain.agents import Tool
 from langchain.memory import ConversationBufferMemory
 from datetime import datetime
-from utils.main import listoftools
+
+if 'VERCEL' in os.environ:
+    from main.llm import AIPipeLLM
+    from main.utils.main import listoftools
+else:
+    from llm import AIPipeLLM
+    from utils.main import listoftools
 
 llm = AIPipeLLM()
 FORBIDDEN = ["shutil", "os", "subprocess", "open(", "rm", "rmtree", "remove", "unlink", "sys.exit", "exit("]

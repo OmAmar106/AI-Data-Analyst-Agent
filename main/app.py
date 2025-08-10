@@ -1,16 +1,21 @@
 from flask import Flask,request,jsonify
 from flask_cors import CORS
 import os,json
-from llm import AIPipeLLM
-from groq_client import Groq
 from langchain.agents import initialize_agent, AgentType
 from langchain_experimental.tools.python.tool import PythonREPLTool
 from langchain.agents import Tool
 from langchain.memory import ConversationBufferMemory
 from datetime import datetime
-from formatter import format
-from miscellaneous import ask_agent
-from utils.main import listoftools
+if 'VERCEL' in os.environ:
+    from main.groq_client import Groq
+    from main.formatter import format
+    from main.miscellaneous import ask_agent
+    from main.utils.main import listoftools
+else:
+    from groq_client import Groq
+    from formatter import format
+    from miscellaneous import ask_agent
+    from utils.main import listoftools
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__,template_folder='templates')
