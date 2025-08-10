@@ -11,7 +11,7 @@ class Groq:
         messages = [
             {
                 "role": "user",
-                "content": f"{content}\n\n\nYou must view the data and perform proper data cleaning, to make sure the answer is accurate\n\n\nOnly give exact answer do not try to modify it."
+                "content": f"{content}\n\n\nYou must view the data and perform proper data cleaning, to make sure the answer is accurate\n\n\nOnly give exact answer do not try to modify it.\n\n\n.If you are not getting any solution, return Null."
             }
         ]   
 

@@ -11,6 +11,7 @@ from langchain_experimental.tools.python.tool import PythonREPLTool
 from langchain.agents import Tool
 from langchain.memory import ConversationBufferMemory
 from datetime import datetime
+from utils.main import listoftools
 
 llm = AIPipeLLM()
 FORBIDDEN = ["shutil", "os", "subprocess", "open(", "rm", "rmtree", "remove", "unlink", "sys.exit", "exit("]
@@ -31,6 +32,7 @@ safe_tool = Tool(
 )
 
 tools = [safe_tool]
+# isme aur bahut kuch add krna hain 
 
 system_prompt = (
     "You are a safe Python data analyst. Never use file deletion, OS commands, or subprocess. "
@@ -38,7 +40,7 @@ system_prompt = (
 )
 
 agent = initialize_agent(
-    tools=[safe_tool],
+    tools=[safe_tool]+listoftools(),
     llm=llm,
     agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
     verbose=True,
@@ -47,11 +49,18 @@ agent = initialize_agent(
 )
 
 
-if __name__=='__main__':
-    t = agent.run(
-            open('test_cases/test_question.txt','r').read() + "\n\n\nRespond with only the final answers, no explanation, no units. "
+def ask_agent(message):
+    return agent.run(
+        message + "\n\n\nRespond with only the final answers, no explanation, no units. "
            "Each answer must be as short as possible and must be accurate, so make sure you do data cleaning properly."
            "Do NOT write full sentences. Also importantly, the output must be in the format specified in the given problem."
     )
-    print()
-    print(t)
+
+# if __name__=='__main__':
+#     t = agent.run(
+#             open('test_cases/test_question.txt','r').read() + "\n\n\nRespond with only the final answers, no explanation, no units. "
+#            "Each answer must be as short as possible and must be accurate, so make sure you do data cleaning properly."
+#            "Do NOT write full sentences. Also importantly, the output must be in the format specified in the given problem."
+#     )
+#     print()
+#     print(t)

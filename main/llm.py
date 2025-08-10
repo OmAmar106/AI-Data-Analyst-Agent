@@ -34,9 +34,14 @@ class AIPipeLLM(LLM):
         return "aipipe"
     
     def _call(self, prompt: str, stop: Optional[List[str]] = None, **kwargs) -> str:
-        for i in range(5):
+        ty = 'AI'
+        if random.randint(0,4)!=0:
+            ty += str(random.randint(1,4))
+
+        for i in range(6):
             # randomnum = random.randint(0,4)
-            ty = 'PER'
+            if i==5:
+                ty = "PER"
             api_url = "https://aipipe.org/openrouter/v1/chat/completions" if ty!="PER" else "https://api.perplexity.ai/chat/completions"
             try:
                 headers = {
@@ -55,7 +60,10 @@ class AIPipeLLM(LLM):
                 response = requests.post(api_url, headers=headers, json=payload)
                 return response.json()['choices'][0]['message']['content']
             except:
-                pass
+                ty = 'AI'
+                if random.randint(0,4)!=0:
+                    ty += str(random.randint(1,4))
+
         return None
     
     def invoke(self,prompt,stop=None):
