@@ -8,6 +8,8 @@ class Groq:
     models: list = ["openai/gpt-oss-120b","openai/gpt-oss-20b"]
     @staticmethod
     def run(content: str):
+
+        LAPI = ["GROK_API_KEY","GROK_API_KEY1","GROK_API_KEY2"]
         messages = [
             {
                 "role": "user",
@@ -16,33 +18,35 @@ class Groq:
         ]   
 
         for model in Groq.models:
-            try:
-                client = Grok(api_key=os.getenv("GROK_API_KEY"))
-                
-                completion = client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    temperature=1,
-                    max_completion_tokens=8192,
-                    top_p=1,
-                    reasoning_effort="high" if model != "deepseek-r1-distill-llama-70b" else None,
-                    stream=True,
-                    stop=None,
-                    tools=[{"type": "code_interpreter"}] if model != "deepseek-r1-distill-llama-70b" else None
-                )
+            for j in range(3):
+                try:
+                    client = Grok(api_key=os.getenv(LAPI[j]))
+                    
+                    completion = client.chat.completions.create(
+                        model=model,
+                        messages=messages,
+                        temperature=1,
+                        max_completion_tokens=8192,
+                        top_p=1,
+                        reasoning_effort="high" if model != "deepseek-r1-distill-llama-70b" else None,
+                        stream=True,
+                        stop=None,
+                        tools=[{"type": "code_interpreter"}] if model != "deepseek-r1-distill-llama-70b" else None
+                    )
 
-                ans = ""
-                for chunk in completion:
-                    delta_content = chunk.choices[0].delta.content
-                    if delta_content:
-                        ans += delta_content
-                
-                if ans.strip():
-                    return ans
-                
-            except Exception as e:
-                print(f"Error with model {model}: {e}")
-                continue  
+                    ans = ""
+                    for chunk in completion:
+                        delta_content = chunk.choices[0].delta.content
+                        if delta_content:
+                            ans += delta_content
+                    
+                    if ans.strip():
+                        print("Grok Executed Succesfully.")
+                        return ans
+                    
+                except Exception as e:
+                    print(f"Error with model {model}: {e}")
+                    continue  
 
         return None
 

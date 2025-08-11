@@ -6,6 +6,8 @@ from langchain_experimental.tools.python.tool import PythonREPLTool
 from langchain.agents import Tool
 from langchain.memory import ConversationBufferMemory
 from datetime import datetime
+import base64
+
 if 'VERCEL' in os.environ:
     from main.groq_client import Groq
     from main.formatter import format
@@ -21,33 +23,50 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__,template_folder='templates')
 CORS(app)
 
-@app.route('/analyze',methods=['POST'])
+@app.route('/analyze', methods=['POST'])
 def analyze():
-    file = request.get_data(as_text=True)
-    # t = agent.run(
-    #         file + "\n\n\nRespond with only the final answers, no explanation, no units. "
-    #        "Each answer must be as short as possible."
-    #        "Do NOT write full sentences."
-    # )
+    uploaded_files = request.files
+    statement_text = ""
+    images_b64 = []
+    dataset_path = None
 
-    # first categorize as data set is there or not
+    for filename, file_storage in uploaded_files.items():
+        ext = filename.lower()
+        data = file_storage.read()
 
-    # 1st -> groq else langchain
+        if ext.endswith(('.txt', '.md')):
+            statement_text += data.decode('utf-8', errors='ignore') + "\n"
+
+        elif ext.endswith(('.png', '.jpg', '.jpeg', '.gif')):
+            b64_str = base64.b64encode(data).decode('utf-8')
+            images_b64.append(f"data:image/{ext.split('.')[-1]};base64,{b64_str}")
+
+        elif ext.endswith(('.csv', '.xlsx')):
+            dataset_path = os.path.join(BASE_DIR, 'uploaded_' + filename)
+            with open(dataset_path, 'wb') as f:
+                f.write(data)
 
     output = None
 
-    try:
-        output = Groq.run(file)
-        if not output:
-            assert(False)
-    except:
+    if statement_text and images_b64 and not dataset_path:
+        combined_input = statement_text + "\n\nAttached Images:\n" + "\n".join(images_b64)
         try:
-            output = ask_agent(file)
+            output = Groq.run(combined_input)
         except:
-            pass
+            output = ask_agent(combined_input)
+    elif dataset_path:
+        combined_input = statement_text + f"\n\nDataset saved at: {dataset_path}"
+        try:
+            output = ask_agent(combined_input)
+        except:
+            output = Groq.run(combined_input)
+    else:
+        try:
+            output = Groq.run(statement_text)
+        except:
+            output = ask_agent(statement_text)
 
-    f_output = format(file,output)
-
+    f_output = format(statement_text, output)
     return jsonify(f_output)
 
 if __name__=='__main__':
