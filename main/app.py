@@ -54,7 +54,7 @@ def analyze():
             output = Groq.run(combined_input)
         except:
             output = ask_agent(combined_input)
-    elif dataset_path and image_b64:
+    elif dataset_path and images_b64:
         combined_input = statement_text + f"\n\nDataset saved at: {dataset_path}" + "\n\nAttached Images:\n" + "\n".join(images_b64)
         try:
             output = Groq.run(combined_input)
