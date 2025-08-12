@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os, json, base64, requests
 from langchain.agents import initialize_agent, AgentType
@@ -19,16 +19,30 @@ else:
     from utils.main import listoftools
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+
 app = Flask(__name__, template_folder='templates')
 CORS(app)
 
-def upload_to_transfersh(file_bytes, filename):
-    url = f"https://transfer.sh/{filename}"
-    resp = requests.put(url, data=file_bytes)
+@app.route('/uploads/<path:filename>')
+def serve_upload(filename):
+    return send_from_directory(UPLOAD_DIR, filename)
+
+def upload_to_0x0(file_bytes, filename):
+    url = "https://0x0.st"
+    files = {'file': (filename, file_bytes)}
+    resp = requests.post(url, files=files)
     if resp.status_code == 200:
         return resp.text.strip()
     else:
         raise Exception(f"Upload failed: {resp.status_code} - {resp.text}")
+
+def save_locally(file_bytes, filename):
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    path = os.path.join(UPLOAD_DIR, filename)
+    with open(path, "wb") as f:
+        f.write(file_bytes)
+    return f"http://{request.host}/uploads/{filename}"
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -43,16 +57,14 @@ def analyze():
 
         if ext.endswith(('.txt', '.md')):
             statement_text += data.decode('utf-8', errors='ignore') + "\n"
-
         elif ext.endswith(('.png', '.jpg', '.jpeg', '.gif')):
             b64_str = base64.b64encode(data).decode('utf-8')
             images_b64.append(f"data:image/{ext.split('.')[-1]};base64,{b64_str}")
-
         elif ext.endswith(('.csv', '.xlsx')):
             try:
-                dataset_url = upload_to_transfersh(data, filename)
+                dataset_url = upload_to_0x0(data, filename)
             except Exception as e:
-                dataset_url = f"[Error uploading dataset: {e}]"
+                dataset_url = save_locally(data, filename) + f" (remote upload failed: {e})"
 
     output = None
 
@@ -84,4 +96,4 @@ def analyze():
     return f_output
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
