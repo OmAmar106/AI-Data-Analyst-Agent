@@ -67,7 +67,7 @@ def analyze():
             output = ask_agent(statement_text)
 
     f_output = format(statement_text, output)
-    return jsonify(f_output)
+    return f_output
 
 if __name__=='__main__':
     app.run(host="0.0.0.0", port=5000)
