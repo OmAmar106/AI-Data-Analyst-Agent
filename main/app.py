@@ -64,7 +64,7 @@ def analyze():
             try:
                 dataset_url = upload_to_0x0(data, filename)
             except Exception as e:
-                dataset_url = save_locally(data, filename) + f" (remote upload failed: {e})"
+                dataset_url = save_locally(data, filename)
 
     output = None
 
