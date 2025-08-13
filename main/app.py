@@ -6,17 +6,10 @@ from langchain_experimental.tools.python.tool import PythonREPLTool
 from langchain.agents import Tool
 from langchain.memory import ConversationBufferMemory
 from datetime import datetime
-
-if 'VERCEL' in os.environ:
-    from main.groq_client import Groq
-    from main.formatter import format
-    from main.miscellaneous import ask_agent
-    from main.utils.main import listoftools
-else:
-    from groq_client import Groq
-    from formatter import format
-    from miscellaneous import ask_agent
-    from utils.main import listoftools
+from groq_client import Groq
+from formatter import format
+from miscellaneous import ask_agent
+from utils.main import listoftools
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
@@ -73,27 +66,31 @@ def analyze():
         try:
             output = Groq.run(combined_input)
         except:
+            print("Groq failed")
             output = ask_agent(combined_input)
     elif dataset_url and images_b64:
         combined_input = statement_text + f"\n\nDataset available at: {dataset_url}" + "\n\nAttached Images:\n" + "\n".join(images_b64)
         try:
             output = Groq.run(combined_input)
         except:
+            print("Groq failed")
             output = ask_agent(combined_input)
     elif dataset_url:
         combined_input = statement_text + f"\n\nDataset available at: {dataset_url}"
         try:
             output = Groq.run(combined_input)
         except:
+            print("Groq failed")
             output = ask_agent(combined_input)
     else:
         try:
             output = Groq.run(statement_text)
         except:
+            print("Groq failed")
             output = ask_agent(statement_text)
 
     f_output = format(statement_text, output)
     return f_output
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000)
