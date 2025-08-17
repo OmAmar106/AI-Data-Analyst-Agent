@@ -4,6 +4,7 @@ from PIL import Image
 import pytesseract
 import fitz
 import filetype
+import base64
 
 def parse_url_to_text(url: str) -> str:
     """
@@ -79,3 +80,56 @@ def parse_url_to_text(url: str) -> str:
         text = f"[Unsupported file type: {mime}]"
 
     return text.strip()
+
+def imageparse(base64string: str) -> str:
+    """
+    Converts a Base64-encoded image string into text using OCR (Tesseract).
+
+    This function decodes the Base64 string into image bytes, reconstructs
+    the image in memory with Pillow, and then extracts any readable text
+    using Tesseract OCR.
+
+    Args:
+        base64string (str): The Base64-encoded representation of an image
+                            (e.g., PNG or JPEG).
+
+    Returns:
+        str: The extracted text content from the image. If no readable text
+             is found, an empty string is returned.
+
+    Raises:
+        ValueError:
+            If the Base64 string is invalid or cannot be decoded into an image.
+        pytesseract.TesseractError:
+            If OCR processing fails for the provided image.
+
+    Example:
+        >>> encoded = image_to_base64("example.png")
+        >>> imageparse(encoded)
+        'Extracted text from the image...'
+    """
+    image_data = base64.b64decode(base64string)
+    image = Image.open(io.BytesIO(image_data))
+    text = pytesseract.image_to_string(image)
+    return text.strip()
+
+def image_to_base64(image: Image.Image) -> str:
+    """
+    Converts a PIL Image object into a Base64-encoded string.
+
+    This function works entirely in memory without writing to disk.
+
+    Args:
+        image (PIL.Image.Image): A Pillow image object.
+
+    Returns:
+        str: Base64-encoded string representation of the image.
+
+    Example:
+        >>> img = Image.open("example.png")
+        >>> encoded = image_to_base64(img)
+        >>> print(encoded[:50])  # prints first 50 characters
+    """
+    buffered = io.BytesIO()
+    image.save(buffered, format=image.format or "PNG")
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
