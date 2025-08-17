@@ -10,7 +10,7 @@ from groq_client import Groq
 from formatter import format
 from miscellaneous import ask_agent
 from utils.main import listoftools
-from utils.tools.parser import imageparse
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 
@@ -62,14 +62,14 @@ def analyze():
     output = None
 
     if statement_text and images_b64 and not dataset_url:
-        combined_input = statement_text + "\n\nAttached Images:\n" + imageparse(images_b64)
+        combined_input = statement_text + "\n\nAttached Images:\n" + "\n".join(images_b64)
         try:
             output = Groq.run(combined_input)
         except:
             print("Groq failed")
             output = ask_agent(combined_input)
     elif dataset_url and images_b64:
-        combined_input = statement_text + "\n\nAttached Images:\n" + imageparse(images_b64) + f"\n\nDataset available at: {dataset_url}" 
+        combined_input = statement_text + f"\n\nDataset available at: {dataset_url}" + "\n\nAttached Images:\n" + "\n".join(images_b64)
         try:
             output = Groq.run(combined_input)
         except:

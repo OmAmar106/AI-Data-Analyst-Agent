@@ -57,9 +57,6 @@ def ask_agent(message):
            "Do NOT write full sentences. Also importantly, the output must be in the format specified in the given problem."
     )
 
-def askagent1(message):
-    return agent.run(message)
-
 # if __name__=='__main__':
 #     t = agent.run(
 #             open('test_cases/test_question.txt','r').read() + "\n\n\nRespond with only the final answers, no explanation, no units. "
