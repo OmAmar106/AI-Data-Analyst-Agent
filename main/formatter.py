@@ -63,6 +63,7 @@ def format(input,output):
                             "Ensure that all numbers are returned as proper numeric values (integers or floats) "
                             "without quotation marks, booleans as true/false, and strings with quotes only if required by the format. "
                             "Return ONLY the final structured output in valid JSON."
+                            "For any base64 answers, replace them with None, just make sure that the remaining answer are in correct format and overall format is correct as required by the problem."
                         )
 
                     }
