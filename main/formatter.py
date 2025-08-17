@@ -60,10 +60,10 @@ def format(input,output):
                             "=== Raw Output ===\n"
                             f"{safe_serialize(output)}\n\n"
                             "Now reformat the Raw Output so that it follows the Problem Statement EXACTLY. "
-                            "Ensure that all numbers are returned as proper numeric values (integers or floats) "
                             "without quotation marks, booleans as true/false, and strings with quotes only if required by the format. "
                             "Return ONLY the final structured output in valid JSON."
                             "For any base64 answers, replace them with 'empty' (in string format), just make sure that the remaining answer are in correct format and overall format is correct as required by the problem."
+                            "Important: Ensure that all numbers are returned as proper numeric values (integers or floats) "
                         )
 
                     }
