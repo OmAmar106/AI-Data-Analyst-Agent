@@ -35,18 +35,18 @@ def safe_serialize(data):
 def format(input,output):
     # output and input provide krke pucho ki correct format hain kya which is needed, if not, make it correct 
 
-    try:
-        output = askagent1(
-            input
-            + "\n\nYour task: Correct only the parts of the output that contain base64 images. "
-            "For each base64 image, do not attempt to rewrite it yourself. "
-            "Instead, call the tool `image_to_base64` with Python code that regenerates the same image. "
-            "Replace only those base64 sections with the tool’s return value. "
-            "Do not modify any other part of the output.\n\nOutput: "
-            + safe_serialize(output)
-        )
-    except:
-        pass
+    # try:
+    #     output = askagent1(
+    #         input
+    #         + "\n\nYour task: Correct only the parts of the output that contain base64 images. "
+    #         "For each base64 image, do not attempt to rewrite it yourself. "
+    #         "Instead, call the tool `image_to_base64` with Python code that regenerates the same image. "
+    #         "Replace only those base64 sections with the tool’s return value. "
+    #         "Do not modify any other part of the output.\n\nOutput: "
+    #         + safe_serialize(output)
+    #     )
+    # except:
+    #     pass
 
     ty = 'AI'
     if random.randint(0,4)!=0:
