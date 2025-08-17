@@ -63,7 +63,7 @@ def format(input,output):
                             "without quotation marks, booleans as true/false, and strings with quotes only if required by the format. "
                             "Return ONLY the final structured output in valid JSON."
                             "For any base64 answers, replace them with 'empty' (in string format), just make sure that the remaining answer are in correct format and overall format is correct as required by the problem."
-                            "Important: Ensure that all numbers are returned as proper numeric values (integers or floats) "
+                            "Very Important: Ensure that all numbers are returned as proper numeric values (integers or floats) like 1 must not be returned as '1' but as 1, it must be as asked in the problem statement."
                         )
 
                     }
